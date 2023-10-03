@@ -65,20 +65,16 @@ int main() {
             char key = _getch();
             switch (key) {
             case 'w':
-                int y = helicopter.GetY();
-                helicopter.MoveUp(0, y); // Mova para cima
+                helicopter.MoveUp(0, helicopter.GetY()); // Mova para cima
                 break;
             case 's':
-                int y = helicopter.GetY();
-                helicopter.MoveDown(0, y); // Mova para baixo
+                helicopter.MoveDown(0, helicopter.GetY()); // Mova para baixo
                 break;
             case 'a':
-                int x = helicopter.GetX();
-                helicopter.MoveLeft(x, 0); // Mova para a esquerda
+                helicopter.MoveLeft(helicopter.GetX(), 0); // Mova para a esquerda
                 break;
             case 'd':
-                int x = helicopter.GetX();
-                helicopter.MoveRight(x, 0); // Mova para a direita
+                helicopter.MoveRight(helicopter.GetX(), 0); // Mova para a direita
                 break;
             }
         }

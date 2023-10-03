@@ -1,6 +1,8 @@
 #ifndef __HELICOPTER_H__
 #define __HELICOPTER_H__
-
+#include <iostream>
+#include <thread>
+#include <chrono>
 #include "Battery.h"
 class Helicopter {
 public:
