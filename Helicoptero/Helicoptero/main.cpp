@@ -46,7 +46,7 @@ int main() {
     // Escolha o nível de dificuldade aqui (FACIL, MEDIO ou DIFICIL)
     DifficultyLevel level = DIFICIL;
 
-    Helicopter helicopter(0, 5);
+    Helicopter helicopter;
     vector<Battery> batteries;
 
     initializeBatteries(level, batteries);
@@ -60,21 +60,25 @@ int main() {
 
     bool victory = false;
 
-    while (helicopter.alive && !victory) {
+    while (!helicopter.isExploded && !victory) {
         if (_kbhit()) {
             char key = _getch();
             switch (key) {
             case 'w':
-                helicopter.move(0, 1); // Mova para cima
+                int y = helicopter.GetY();
+                helicopter.MoveUp(0, y); // Mova para cima
                 break;
             case 's':
-                helicopter.move(0, -1); // Mova para baixo
+                int y = helicopter.GetY();
+                helicopter.MoveDown(0, y); // Mova para baixo
                 break;
             case 'a':
-                helicopter.move(-1, 0); // Mova para a esquerda
+                int x = helicopter.GetX();
+                helicopter.MoveLeft(x, 0); // Mova para a esquerda
                 break;
             case 'd':
-                helicopter.move(1, 0); // Mova para a direita
+                int x = helicopter.GetX();
+                helicopter.MoveRight(x, 0); // Mova para a direita
                 break;
             }
         }
@@ -83,7 +87,7 @@ int main() {
             victory = true;
         }
 
-        if (helicopter.alive) {
+        if (!helicopter.isExploded) {
             displayGame(helicopter, batteries);
             this_thread::sleep_for(chrono::milliseconds(100));
         }
