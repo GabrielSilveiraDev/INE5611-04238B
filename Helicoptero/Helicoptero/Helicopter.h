@@ -13,7 +13,7 @@ public:
 	bool isExploded; // Indica se o helicóptero explodiu
 
 	// Construtor para inicializar o helicóptero na posição maxima a esquerda e com o combustível máximo
-	Helicopter() : x(0), y(10), fuel(100), soldiers(10), isExploded(false) {}
+	Helicopter() : x(1), y(10), fuel(100), soldiers(10), isExploded(false) {}
 		
 
 	// Métodos de movimento
@@ -22,11 +22,12 @@ public:
 	void MoveLeft(int x, int y);
 	void MoveRight(int x, int y);
 
+	bool IsExploded();
+
 	// Métodos para obter informações sobre o helicóptero
 	int GetX() const { return x; }
 	int GetY() const { return y; }
 	int GetFuel() const { return fuel; }
-	bool IsExploded() const { return isExploded; }
 
 	// Check if the helicopter is in the same position as the battery
 	bool IsInBattery(const Battery& battery) const {

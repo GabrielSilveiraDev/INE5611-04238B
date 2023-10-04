@@ -83,10 +83,18 @@ int main() {
             victory = true;
         }
 
-        if (!helicopter.isExploded) {
+        if (helicopter.isExploded) {
             displayGame(helicopter, batteries);
             this_thread::sleep_for(chrono::milliseconds(100));
+            gameOver = true;
+            clearScreen();
+            cout << "Aviao foi abatido!" << endl;
         }
+        else {
+			displayGame(helicopter, batteries);
+			this_thread::sleep_for(chrono::milliseconds(100));
+           // gameOver = true;
+		}
     }
 
     // Encerre o jogo
