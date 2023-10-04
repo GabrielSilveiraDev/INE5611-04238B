@@ -79,7 +79,7 @@ int main() {
             }
         }
 
-        if (helicopter.x >= 20) {
+        if (helicopter.IsInBase()) {
             victory = true;
         }
 
