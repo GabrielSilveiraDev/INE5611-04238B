@@ -346,6 +346,8 @@ GitHub.sublime-settings
 tmtags
 
 ##### VisualStudioCode
+Helicoptero/.vscode/*
+*.vscode/*
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
