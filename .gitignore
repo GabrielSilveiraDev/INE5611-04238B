@@ -601,6 +601,9 @@ bld/
 # Visual Studio 2017 auto generated files
 Generated\ Files/
 
+Helicoptero/.vscode/*
+Helicoptero/Helicoptero/x64/*
+
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
