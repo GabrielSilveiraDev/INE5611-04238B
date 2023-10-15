@@ -22,13 +22,16 @@ public:
     int reloadTime;
     int capacity;
     bool crossingBridge;
+    std::chrono::steady_clock::time_point lastReloadTime;
+    bool waitingToCross = false;
     int firingInterval;  
 
-    Battery(int startX, int startY, int rockets, int reload, int firingInterval);
+    Battery(int startX, int startY, int rockets, int reload, int interval);
     void move(int dx, int dy);
     void reload();
 
     std::vector<Rocket> rocketsFired;
+    std::chrono::steady_clock::time_point lastFiredTime;
 
     void fireRocket();
     void updateRockets();
@@ -41,6 +44,7 @@ public:
     }
 
     void batteryLogic(Battery& otherBattery); // Declare a função batteryLogic aqui
+    void handleReload(Battery& otherBattery);
 };
 
 

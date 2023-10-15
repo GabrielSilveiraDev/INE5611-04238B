@@ -79,7 +79,7 @@ int main() {
 	srand(time(nullptr));
 
 	// Escolha o nível de dificuldade aqui (FACIL, MEDIO ou DIFICIL)
-	DifficultyLevel level = FACIL;
+	DifficultyLevel level = DIFICIL;
 
 	Helicopter helicopter;
 	vector<Battery> batteries;
@@ -135,7 +135,7 @@ int main() {
 		}
 
 		drawGame(helicopter, batteries);
-		//std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
 	}
 
