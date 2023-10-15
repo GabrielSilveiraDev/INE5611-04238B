@@ -30,7 +30,10 @@ void drawGame(const Helicopter& helicopter, const vector<Battery>& batteries) {
 	// Inicializar o tabuleiro com espaços vazios
 	for (int i = 0; i < 25; i++) {
 		for (int j = 0; j < 50; j++) {
-			if (i == 0 || j == 0 || i == 24 || j == 49) {
+			if (i == 24 && (j == 2 || j == 3)) {
+				board[i][j] = '_'; // Ponte
+			}
+			else if (i == 0 || j == 0 || i == 24 || j == 49) {
 				board[i][j] = '#'; // Paredes
 			}
 			else {
@@ -89,8 +92,13 @@ int main() {
 	mutex mtx;
 
 	vector<thread> batteryThreads;
+	vector<thread> rocketThreads;
+
 	batteryThreads.emplace_back(&Battery::batteryLogic, &batteries[0], std::ref(batteries[1]));
 	batteryThreads.emplace_back(&Battery::batteryLogic, &batteries[1], std::ref(batteries[0]));
+	rocketThreads.emplace_back(&Battery::updateRocketsLoop, &batteries[0]); // Lógica dos foguetes
+	rocketThreads.emplace_back(&Battery::updateRocketsLoop, &batteries[1]); // Lógica dos foguetes
+
 	bool victory = false;
 
 	while (!gameOver) {
@@ -149,6 +157,13 @@ int main() {
 	for (thread& t : batteryThreads) {
 		t.join();
 	}
+
+	for (thread& t : rocketThreads) {
+		if (t.joinable()) {
+			t.join();
+		}
+	}
+
 
 	if (victory) {
 		cout << "Vitória! Você alcançou o objetivo com sucesso!" << endl;

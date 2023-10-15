@@ -16,18 +16,22 @@ public:
 
     int x;
     int y;
+    int initialX;
     bool alive;
     bool reloading;
     int numRockets;
     int reloadTime;
     int capacity;
     bool crossingBridge;
+    bool crossingDone;
     std::chrono::steady_clock::time_point lastReloadTime;
     bool waitingToCross = false;
     int firingInterval;  
 
     Battery(int startX, int startY, int rockets, int reload, int interval);
     void move(int dx, int dy);
+    void start();
+    void updateRocketsLoop();
     void reload();
 
     std::vector<Rocket> rocketsFired;
@@ -35,13 +39,6 @@ public:
 
     void fireRocket();
     void updateRockets();
-
-    void fireRocket(int directionX, int directionY) {
-        if (numRockets > 0) {
-            rocketsFired.push_back(Rocket(x, y, directionX, directionY));
-            numRockets--;
-        }
-    }
 
     void batteryLogic(Battery& otherBattery); // Declare a função batteryLogic aqui
     void handleReload(Battery& otherBattery);
