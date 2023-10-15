@@ -1,64 +1,51 @@
 #include "Helicopter.h"
 
-
-
-void Helicopter::MoveUp(int h, int d)
-{
-	// Move up the helicopter by 1 unit and check if it is in the wall
-	if (x < 0 || y >= 20) {
-		isExploded = true;
-	}
-	else if (y < 20) {
-		y++;
-	}
+// Método para mover o helicóptero para cima
+void Helicopter::MoveUp(int x, int y) {
+    if (this->y > 0) {  // Verificar se não está no topo
+        this->y--;
+    }
+    else {
+        isExploded = true;  // O helicóptero explodiu ao bater no topo
+    }
 }
 
-void Helicopter::MoveDown(int h, int d)
-{
-	// Move down the helicopter by 1 unit and check if it is in the wall
-	if (x <= 0 || y >= 20) {
-		isExploded = true;
-	}
-	else if (y > 0) {
-		y--;
-	}
+// Método para mover o helicóptero para baixo
+void Helicopter::MoveDown(int x, int y) {
+    if (this->y < 19) {  // Verificar se não está na parte inferior
+        this->y++;
+    }
+    else {
+        isExploded = true;  // O helicóptero explodiu ao bater no chão
+    }
 }
 
-void Helicopter::MoveLeft(int h, int d)
-{
-	// Move left the helicopter by 1 unit
-	if (x > 0) {
-		x--;
-	}
-	else if (x <= 0 || y >= 20) {
-		isExploded = true;
-	}
+// Método para mover o helicóptero para a esquerda
+void Helicopter::MoveLeft(int x, int y) {
+    if (this->x > 0) {
+        this->x--;
+    }
 }
 
-void Helicopter::MoveRight(int h, int d)
-{
-	// Move right the helicopter by 1 unit and check if it is in the wall
-	if (x <= 0 || y >= 20) {
-		isExploded = true;
-	}
-	else if (x < 40) {
-		x++;
-	}
+// Método para mover o helicóptero para a direita
+void Helicopter::MoveRight(int x, int y) {
+    if (this->x < 19) {
+        this->x++;
+    }
 }
 
-bool Helicopter::IsExploded()
-{
-	// Check if helicopter is exploded crashing in the wall
-	return isExploded;
-
+// Método para verificar se o helicóptero explodiu
+bool Helicopter::IsExploded() {
+    return isExploded;
 }
 
-bool Helicopter::IsInWall(int x, int y)
-{
-	return x == 0 || x == 40 || y == 0 || y == 20;
+// Método para verificar se o helicóptero colidiu com a parede (por enquanto, assume-se que a parede é o limite da tela)
+bool Helicopter::IsInWall(int x, int y) {
+    return (x == 0 || x == 19 || y == 0 || y == 19);
 }
 
-bool Helicopter::IsInBase()
-{
-	return x == 20 && y == 10;
+// Método para verificar se o helicóptero chegou à base
+bool Helicopter::IsInBase() {
+    // Assumindo que a base está na coordenada (19,10)
+    return (x == 19 && y == 10);
 }

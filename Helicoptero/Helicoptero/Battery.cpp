@@ -1,83 +1,100 @@
 #include "Battery.h"
-#include <iostream>
 #include <thread>
 #include <chrono>
+#include <random>
 
-Battery::Battery(int startX, int startY, int rockets, int reload)
-    : x(startX), y(startY), alive(true), reloading(false), numRockets(rockets), reloadTime(reload) {}
+std::mutex mtx; // Mutex global
+std::condition_variable cv; // Variável de condição global
+bool bridgeInUse = false; // Indica se a ponte está em uso
 
+// Construtor da classe Battery
+Battery::Battery(int startX, int startY, int rockets, int reload, int firingInterval) {
+    x = startX;
+    y = startY;
+    alive = true;
+    reloading = false;
+    numRockets = rockets;
+    reloadTime = reload;
+    capacity = rockets;
+    crossingBridge = false;
+}
+
+// Função para mover a bateria
 void Battery::move(int dx, int dy) {
     x += dx;
     y += dy;
 }
 
+// Função para recarregar a bateria
 void Battery::reload() {
-    reloading = true;
-    // Simular tempo de recarga aleatório de 1/10 s a 1/2 s
-    int reloadDuration = 100 + rand() % 400;
-    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(reloadTime));
+    numRockets = capacity;
     reloading = false;
-    numRockets = capacity; // Recarregou completamente
 }
+
+void Battery::fireRocket() {
+    if (numRockets > 0 && alive) {
+        rocketsFired.push_back(Rocket(x, y, 0, -1));
+        numRockets--;
+    }
+}
+
+void Battery::updateRockets() {
+    for (Rocket& rocket : rocketsFired) {
+        rocket.move();
+    }
+    rocketsFired.erase(std::remove_if(rocketsFired.begin(), rocketsFired.end(),
+        [](const Rocket& rocket) { return rocket.y < 0; }),
+        rocketsFired.end());
+}
+
+void Battery::batteryLogic(Battery& otherBattery) {
+    auto lastFiredTime = std::chrono::system_clock::now();
+
+    while (alive) {
+        auto currentTime = std::chrono::system_clock::now();
+        auto timeSinceLastFired = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastFiredTime);
+
+        if (numRockets <= 0 && !reloading) {
+            std::unique_lock<std::mutex> lock(mtx);
+            cv.wait(lock, [&]() { return !bridgeInUse && !otherBattery.reloading; });
+            bridgeInUse = true;
+            crossingBridge = true;
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            crossingBridge = false;
+            reloading = true;
+            reload();
+            reloading = false;
+            crossingBridge = true;
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            crossingBridge = false;
+            bridgeInUse = false;
+            cv.notify_all();
+        }
+        else if (timeSinceLastFired.count() >= firingInterval && numRockets > 0) {
+            fireRocket();
+            lastFiredTime = currentTime;
+        }
+
+        updateRockets();
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+}
+
 
 void initializeBatteries(DifficultyLevel level, std::vector<Battery>& batteries) {
-    batteries.push_back(Battery(10, 2, 0, 0)); // Bateria 0
-    batteries.push_back(Battery(10, 8, 0, 0)); // Bateria 1
-
     switch (level) {
     case FACIL:
-        // Configurações para o nível fácil
-        batteries[0].capacity = 3;
-        batteries[0].reloadTime = 500;
-        batteries[1].capacity = 3;
-        batteries[1].reloadTime = 500;
+        batteries.push_back(Battery(5, 23, 5, 500, 8000));
+        batteries.push_back(Battery(10, 20, 5, 500, 8000));
         break;
     case MEDIO:
-        // Configurações para o nível médio
-        batteries[0].capacity = 10;
-        batteries[0].reloadTime = 1000;
-        batteries[1].capacity = 10;
-        batteries[1].reloadTime = 1000;
+        batteries.push_back(Battery(5, 23, 10, 400, 5000));
+        batteries.push_back(Battery(10, 20, 10, 400, 5000));
         break;
     case DIFICIL:
-        // Configurações para o nível difícil
-        batteries[0].capacity = 20;
-        batteries[0].reloadTime = 500;
-        batteries[1].capacity = 20;
-        batteries[1].reloadTime = 500;
+        batteries.push_back(Battery(5, 23, 15, 300, 3000));
+        batteries.push_back(Battery(10, 20, 15, 300, 3000));
         break;
     }
 }
-
-void Battery::batteryLogic(Battery& otherBattery, std::mutex& mtx) {
-    while (alive) {
-        // Lógica para movimento da bateria
-
-        // Verificando se precisa recarregar e espere, se necessário
-        if (reloading) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            continue;
-        }
-
-        // Verificando se a outra bateria está atravessando a ponte e aguarde, se necessário
-        if (otherBattery.reloading) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            continue;
-        }
-
-        // Lógica para disparar foguetes
-
-        if (numRockets > 0) {
-            mtx.lock();
-            // Dispare um foguete
-            numRockets--;
-            mtx.unlock();
-            // Simulando o tempo de disparo
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        } else {
-            reload();
-        }
-    }
-}
-
-
