@@ -42,6 +42,14 @@ void drawGame(const Helicopter& helicopter, const vector<Battery>& batteries) {
 		}
 	}
 
+	for (int i = 46; i <= 48; i++) {
+		board[13][i] = '_';
+	}
+
+	for (int i = 14; i <= 23; i++) {
+		board[i][46] = '|';
+	}
+
 	// Posicionar o depósito em (1,1)
 	board[23][1] = 'D';
 
@@ -75,6 +83,27 @@ void drawGame(const Helicopter& helicopter, const vector<Battery>& batteries) {
 	}
 }
 
+void handleInput(Helicopter& helicopter) {
+	while (!gameOver) {
+		if (_kbhit()) {
+			char key = _getch();
+			switch (key) {
+			case 72: // Seta para cima
+				helicopter.MoveUp(helicopter.x, helicopter.y);
+				break;
+			case 80: // Seta para baixo
+				helicopter.MoveDown(helicopter.x, helicopter.y);
+				break;
+			case 75: // Seta para esquerda
+				helicopter.MoveLeft(helicopter.x, helicopter.y);
+				break;
+			case 77: // Seta para direita
+				helicopter.MoveRight(helicopter.x, helicopter.y);
+				break;
+			}
+		}
+	}
+}
 
 
 
@@ -86,6 +115,8 @@ int main() {
 
 	Helicopter helicopter;
 	vector<Battery> batteries;
+
+	std::thread inputThread(handleInput, std::ref(helicopter)); // Thread para entradas do usuário
 
 	initializeBatteries(level, batteries);
 
@@ -102,32 +133,24 @@ int main() {
 	bool victory = false;
 
 	while (!gameOver) {
-		if (_kbhit()) {
-			char key = _getch();
-			switch (key) {
-			case 'w':
-				helicopter.MoveUp(helicopter.x, helicopter.y);
-				break;
-			case 's':
-				helicopter.MoveDown(helicopter.x, helicopter.y);
-				break;
-			case 'a':
-				helicopter.MoveLeft(helicopter.x, helicopter.y);
-				break;
-			case 'd':
-				helicopter.MoveRight(helicopter.x, helicopter.y);
-				break;
+		
+		for (const Battery& battery : batteries) {
+			if (helicopter.x == battery.x && helicopter.y == battery.y) {
+				gameOver = true;
+				victory = false;
+				cout << "Derrota! O helicóptero colidiu com uma bateria." << endl;
+				break; // Sai do loop de verificação de colisão
 			}
 		}
 
 		// Condição de vitória
-		if (helicopter.x == 25) {
+		if (helicopter.x >= 46 && (helicopter.y < 13 && helicopter.y > 10)) {
 			gameOver = true;
 			victory = true;
 		}
 
-		// Condições de derrota
-		if (helicopter.y == 0 || helicopter.y == 25 || helicopter.x == 0) {
+		// Condição de derrota por colisão com a plataforma
+		if ((helicopter.x >= 46 && helicopter.y >= 13) || (helicopter.x == 1 && helicopter.y == 23) || helicopter.y == 0 || helicopter.y == 24 || helicopter.x == 0 || helicopter.x == 49) {
 			gameOver = true;
 			victory = false;
 		}
@@ -157,6 +180,8 @@ int main() {
 	for (thread& t : batteryThreads) {
 		t.join();
 	}
+
+	inputThread.join();
 
 	for (thread& t : rocketThreads) {
 		if (t.joinable()) {

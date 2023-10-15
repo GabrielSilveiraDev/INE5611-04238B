@@ -130,8 +130,8 @@ void initializeBatteries(DifficultyLevel level, std::vector<Battery>& batteries)
         batteries.push_back(Battery(15, 23, 10, 1500, 1000));
         break;
     case DIFICIL:
-        batteries.push_back(Battery(10, 23, 15, 10000, 500));
-        batteries.push_back(Battery(15, 23, 15, 10000, 500));
+        batteries.push_back(Battery(10, 23, 15, 1000, 500));
+        batteries.push_back(Battery(15, 23, 15, 1000, 500));
         break;
     }
 }

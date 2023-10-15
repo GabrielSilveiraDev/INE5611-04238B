@@ -12,7 +12,7 @@ void Helicopter::MoveUp(int x, int y) {
 
 // Método para mover o helicóptero para baixo
 void Helicopter::MoveDown(int x, int y) {
-    if (this->y < 19) {  // Verificar se não está na parte inferior
+    if (this->y <= 23) {  // Verificar se não está na parte inferior
         this->y++;
     }
     else {
@@ -29,7 +29,7 @@ void Helicopter::MoveLeft(int x, int y) {
 
 // Método para mover o helicóptero para a direita
 void Helicopter::MoveRight(int x, int y) {
-    if (this->x < 19) {
+    if (this->x < 49) {
         this->x++;
     }
 }
