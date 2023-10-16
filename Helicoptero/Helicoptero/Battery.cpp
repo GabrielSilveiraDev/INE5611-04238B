@@ -108,17 +108,17 @@ void Battery::handleReload(Battery& otherBattery) {
 void initializeBatteries(DifficultyLevel level, std::vector<Battery>& batteries) {
     switch (level) {
     case FACIL:
-        batteries.push_back(Battery(10, 23, 8, 500, 2000));
-        batteries.push_back(Battery(15, 23, 12, 500, 2000));
+        batteries.push_back(Battery(10, 23, 14, 500, 2000));
+        batteries.push_back(Battery(15, 23, 18, 500, 2000));
         break;
     case MEDIO:
-        batteries.push_back(Battery(10, 23, 10, 300, 1500));
-        batteries.push_back(Battery(15, 23, 15, 300, 1500));
+        batteries.push_back(Battery(10, 23, 20, 300, 1500));
+        batteries.push_back(Battery(15, 23, 25, 300, 1500));
 
         break;
     case DIFICIL:
-        batteries.push_back(Battery(10, 23, 15, 200, 1000));
-        batteries.push_back(Battery(15, 23, 22, 200, 1000));
+        batteries.push_back(Battery(10, 23, 30, 200, 1000));
+        batteries.push_back(Battery(15, 23, 35, 200, 1000));
         break;
     }
 }
