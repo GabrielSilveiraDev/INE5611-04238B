@@ -135,7 +135,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Battery.h" />
-    <ClInclude Include="Game.h" />
     <ClInclude Include="Helicopter.h" />
     <ClInclude Include="Rocket.h" />
   </ItemGroup>

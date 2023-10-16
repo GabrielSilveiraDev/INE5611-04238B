@@ -5,11 +5,7 @@
 
 std::mutex mtx; // Mutex global original
 std::condition_variable cv; // Variável de condição global
-bool bridgeInUse = false; // Indica se a ponte está em uso
-
-std::mutex mtx_bridgeInUse; // Protege a variável bridgeInUse
 std::mutex mtx_rocketsFired; // Protege a lista rocketsFired
-std::mutex mtx_batteryState; // Protege alive, reloading, waitingToCross, e crossingBridge
 
 // Construtor da classe Battery
 Battery::Battery(int startX, int startY, int rockets, int reload, int interval) {
@@ -22,15 +18,10 @@ Battery::Battery(int startX, int startY, int rockets, int reload, int interval) 
     reloadTime = reload;
     capacity = rockets;
     crossingBridge = false;
-    crossingDone = false;
     firingInterval = interval;
 }
 
-// Função para mover a bateria
-void Battery::move(int dx, int dy) {
-    x += dx;
-    y += dy;
-}
+
 
 // Lógica da bateria sem os foguetes
 void Battery::batteryLogic(Battery& otherBattery) {
@@ -59,15 +50,12 @@ void Battery::reload() {
 void Battery::fireRocket() {
     if (reloading) return; // Não atire enquanto estiver recarregando.
 
-    auto now = std::chrono::steady_clock::now();
-    auto timeSinceLastFired = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastFiredTime).count();
-    if (timeSinceLastFired >= firingInterval && numRockets > 0 && alive) {
+    if (numRockets > 0 && alive) {
         {
             std::lock_guard<std::mutex> lock(mtx_rocketsFired);
             rocketsFired.push_back(Rocket(x, y, 0, -1));
         }
         numRockets--;
-        lastFiredTime = now;
     }
 }
 
@@ -82,10 +70,9 @@ void Battery::updateRockets() {
         rocketsFired.end());
 }
 void Battery::handleReload(Battery& otherBattery) {
-    auto now = std::chrono::steady_clock::now();
-    auto timeSinceLastReload = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastReloadTime).count();
 
-    if (numRockets <= 0 && !reloading && timeSinceLastReload >= 500) {
+
+    if (numRockets <= 0 && !reloading) {
 
         // Movendo a bateria até a posição (23,2)
         while (x > 2) {
@@ -103,7 +90,6 @@ void Battery::handleReload(Battery& otherBattery) {
         reloading = true;
         reload();
         reloading = false;
-        lastReloadTime = now;
 
         // Movendo a bateria de volta para sua posição inicial
         while (x < initialX) {
@@ -122,16 +108,17 @@ void Battery::handleReload(Battery& otherBattery) {
 void initializeBatteries(DifficultyLevel level, std::vector<Battery>& batteries) {
     switch (level) {
     case FACIL:
-        batteries.push_back(Battery(10, 23, 5, 2000, 1500));
-        batteries.push_back(Battery(10, 23, 5, 2000, 1500));
+        batteries.push_back(Battery(10, 23, 8, 500, 2000));
+        batteries.push_back(Battery(15, 23, 12, 500, 2000));
         break;
     case MEDIO:
-        batteries.push_back(Battery(10, 23, 10, 1500, 1000));
-        batteries.push_back(Battery(15, 23, 10, 1500, 1000));
+        batteries.push_back(Battery(10, 23, 10, 300, 1500));
+        batteries.push_back(Battery(15, 23, 15, 300, 1500));
+
         break;
     case DIFICIL:
-        batteries.push_back(Battery(10, 23, 15, 1000, 500));
-        batteries.push_back(Battery(15, 23, 15, 1000, 500));
+        batteries.push_back(Battery(10, 23, 15, 200, 1000));
+        batteries.push_back(Battery(15, 23, 22, 200, 1000));
         break;
     }
 }
